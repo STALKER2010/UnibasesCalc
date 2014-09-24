@@ -16,8 +16,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.Cursor;
+
 import javax.swing.JLabel;
+
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UIFrame extends JFrame implements ActionListener, KeyListener {
 	private static final long serialVersionUID = -6373767470343788852L;
@@ -35,7 +41,7 @@ public class UIFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton but5;
 	private JButton but6;
 	private JPanel panel;
-	private JLabel lblSolvation;
+	private JTextField lblSolvation;
 	private JTextField baseField;
 
 	/**
@@ -145,9 +151,10 @@ public class UIFrame extends JFrame implements ActionListener, KeyListener {
 		btnbase.setHorizontalAlignment(SwingConstants.LEFT);
 		buttonsPanel.add(btnbase);
 
-		lblSolvation = new JLabel("Solvation");
+		lblSolvation = new JTextField("Solution");
+		lblSolvation.setFocusable(false);
+		lblSolvation.setEditable(false);
 		lblSolvation.setPreferredSize(new Dimension(150, 16));
-		lblSolvation.setVerticalAlignment(SwingConstants.TOP);
 		lblSolvation.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		lblSolvation.setAlignmentY(Component.TOP_ALIGNMENT);
 		lblSolvation.setMinimumSize(new Dimension(150, 16));
@@ -198,12 +205,108 @@ public class UIFrame extends JFrame implements ActionListener, KeyListener {
 			{
 				try {
 					base = Integer.valueOf(baseField.getText());
-				} catch (NumberFormatException ex1) {}
+				} catch (NumberFormatException ex1) {
+				}
 			}
 			String res = Long.toString(e.evaluate(), base);
 			resultField.setText(res);
+			solutionChange(s);
 		} catch (Exception ex) {
 		}
+	}
+
+	private void solutionChange(final String s) {
+		final int cP = countOf(s, '+');
+		final int cMi = countOf(s, '-');
+		final int cMu = countOf(s, '*');
+		final int cD = countOf(s, '/');
+		if ((cP + cMi + cMu + cD) == 1) {
+			if (cP == 1) {
+				plus(s);
+			} else if (cMi == 1) {
+				minus(s);
+			} else if (cMu == 1) {
+				mul(s);
+			} else if (cD == 1) {
+				div(s);
+			}
+		}
+	}
+
+	private void plus(final String s) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void minus(final String s) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static final Pattern baseP = Pattern.compile(".*_b(\\d+)");
+
+	private void mul(final String str) {
+		final String[] data = str.split("\\*");
+		String fD = data[0].trim().intern();
+		String sD = data[1].trim().intern();
+		int base1 = 10;
+		int base2 = 10;
+		{
+			if (fD.contains("_b")) {
+				final Matcher m = baseP.matcher(fD);
+				if (m.matches()) {
+					base1 = Integer.valueOf(m.group(1));
+				}
+			}
+			if (sD.contains("_b")) {
+				final Matcher m = baseP.matcher(sD);
+				if (m.matches()) {
+					base2 = Integer.valueOf(m.group(1));
+				}
+			}
+		}
+		fD = fD.substring(0, fD.indexOf("_"));
+		sD = sD.substring(0, sD.indexOf("_"));
+		Long f = 0L;
+		Long s = 0L;
+		try {
+			f = Long.valueOf(fD, base1);
+			s = Long.valueOf(sD, base2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		final List<String> proc = new ArrayList<String>();
+		for (Character c : sD.toCharArray()) {
+			final Long cl = Chars.c2i(c, base2);
+			proc.add(Long.toString(cl * f, base2));
+		}
+		final StringBuilder res = new StringBuilder();
+		res.append("   ");
+		res.append(fD);
+		res.append(System.getProperty("line.separator"));
+		res.append(" + ");
+		res.append(sD);
+		res.append(System.getProperty("line.separator"));
+		for (int i = 0; i < String.valueOf(Math.max(f, s)).length() * 2; i++) {
+			res.append("-");
+		}
+		res.append("\n");
+		for (int i = proc.size() - 1; i >= 0; i--) {
+			res.append(" ");
+			res.append(proc.get(i));
+			res.append(System.getProperty("line.separator"));
+		}
+		res.append(resultField.getText());
+		lblSolvation.setText(res.toString());
+	}
+
+	private void div(final String s) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static final int countOf(final String s, final char c) {
+		return s.length() - s.replace(Character.toString(c), "").length();
 	}
 
 }
