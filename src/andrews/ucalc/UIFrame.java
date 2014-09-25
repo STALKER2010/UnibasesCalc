@@ -294,7 +294,7 @@ public class UIFrame extends JFrame implements ActionListener, KeyListener {
 			for (int i = 0; i < lineLen; i++) {
 				res.append("-");
 			}
-			res.append("\n");
+			res.append("\r\n");
 			for (int i = proc.size() - 1; i >= 0; i--) {
 				res.append(" ");
 				res.append(proc.get(i));
@@ -303,6 +303,7 @@ public class UIFrame extends JFrame implements ActionListener, KeyListener {
 			for (int i = 0; i < lineLen; i++) {
 				res.append("-");
 			}
+			res.append("\r\n");
 			res.append(resultField.getText());
 			lblSolvation.setText(res.toString());
 		} catch (Exception e) {
