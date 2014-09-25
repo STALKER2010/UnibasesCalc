@@ -76,8 +76,8 @@ public class Expression {
 					s = s.substring(1);
 					break;
 				}
-				if (Character.isDigit(cur)) {
-					temp.append(Integer.parseInt(Character.toString(cur)));
+				if (Character.isDigit(cur) || Character.isAlphabetic(cur)) {
+					temp.append(cur);
 					s = s.substring(1);
 				} else {
 					break;
